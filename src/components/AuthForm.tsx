@@ -18,6 +18,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createAccount } from '@/actions/user.actions';
+import OtpModal from './OTPModal';
 // import { createAccount, signInUser } from "@/lib/actions/user.actions";
 // import OtpModal from "@/components/OTPModal";
 
@@ -37,6 +38,7 @@ const authFormSchema = (formType: FormType) => {
 };
 
 const AuthForm = ({ type }: { type: FormType }) => {
+  const [isOpen, setIsOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [accountId, setAccountId] = useState(null);
@@ -53,6 +55,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setErrorMessage('');
+    setIsOpen(false);
+    setAccountId(null);
 
     try {
       const user =
@@ -65,6 +69,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
             console.log('first');
       setAccountId(user.accountId);
+      setIsOpen(true);
     } catch {
       setErrorMessage('Failed to create account. Please try again.');
     } finally {
@@ -162,9 +167,14 @@ const AuthForm = ({ type }: { type: FormType }) => {
         </form>
       </Form>
 
-      {/* {accountId && (
-        <OtpModal email={form.getValues("email")} accountId={accountId} />
-      )} */}
+      {accountId && isOpen && (
+        <OtpModal
+          email={form.getValues('email')}
+          accountId={accountId}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
+      )}
     </>
   );
 };
