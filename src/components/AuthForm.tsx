@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { createAccount } from '@/actions/user.actions';
+import { createAccount, signInUser } from '@/actions/user.actions';
 import OtpModal from './OTPModal';
 // import { createAccount, signInUser } from "@/lib/actions/user.actions";
 // import OtpModal from "@/components/OTPModal";
@@ -65,9 +65,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
               fullName: values.fullName || '',
               email: values.email,
             })
-          : // : await signInUser({ email: values.email });
+          : await signInUser({ email: values.email });
 
-            console.log('first');
       setAccountId(user.accountId);
       setIsOpen(true);
     } catch {
