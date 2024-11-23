@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import Image from "next/image";
-import { Input } from "@/components/ui/input";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { getFiles } from "@/lib/actions/file.actions";
-import { Models } from "node-appwrite";
-import Thumbnail from "@/components/Thumbnail";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import { useDebounce } from "use-debounce";
+import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Models } from 'node-appwrite';
+import Thumbnail from '@/components/Thumbnail';
+import FormattedDateTime from '@/components/FormattedDateTime';
+import { useDebounce } from 'use-debounce';
+import { getFiles } from '@/actions/file.actions';
 const Search = () => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("query") || "";
+  const searchQuery = searchParams.get('query') || '';
   const [results, setResults] = useState<Models.Document[]>([]);
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -25,7 +25,7 @@ const Search = () => {
       if (debouncedQuery.length === 0) {
         setResults([]);
         setOpen(false);
-        return router.push(path.replace(searchParams.toString(), ""));
+        return router.push(path.replace(searchParams.toString(), ''));
       }
 
       const files = await getFiles({ types: [], searchText: debouncedQuery });
@@ -38,7 +38,7 @@ const Search = () => {
 
   useEffect(() => {
     if (!searchQuery) {
-      setQuery("");
+      setQuery('');
     }
   }, [searchQuery]);
 
@@ -47,7 +47,7 @@ const Search = () => {
     setResults([]);
 
     router.push(
-      `/${file.type === "video" || file.type === "audio" ? "media" : file.type + "s"}?query=${query}`,
+      `/${file.type === 'video' || file.type === 'audio' ? 'media' : file.type + 's'}?query=${query}`,
     );
   };
 
