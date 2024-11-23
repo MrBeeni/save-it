@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { cn, convertFileToUrl, getFileType } from '@/lib/utils';
 import Image from 'next/image';
 import { MAX_FILE_SIZE } from '@/constants';
-// import { uploadFile } from '@/lib/actions/file.actions';
 import { usePathname } from 'next/navigation';
 import Thumbnail from './Thumbnail';
 import { toast } from 'sonner';
