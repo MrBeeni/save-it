@@ -1,4 +1,5 @@
 import { getFiles, getTotalSpaceUsed } from '@/actions/file.actions';
+import { getCurrentUser } from '@/actions/user.actions';
 import Card from '@/components/Card';
 import Sort from '@/components/Sort';
 import {
@@ -11,6 +12,7 @@ import { Models } from 'node-appwrite';
 import React from 'react';
 
 const Page = async ({ params, searchParams }: SearchParamProps) => {
+  const currentUser = await getCurrentUser();
   const type = ((await params)?.type as string) || '';
   const searchText = ((await searchParams)?.query as string) || '';
   const sort = ((await searchParams)?.sort as string) || '';
@@ -46,7 +48,11 @@ const Page = async ({ params, searchParams }: SearchParamProps) => {
       {files.total > 0 ? (
         <section className="file-list">
           {files.documents.map((file: Models.Document) => (
-            <Card key={file.$id} file={file} />
+            <Card
+              key={file.$id}
+              file={file}
+              currentUserAccountId={currentUser.accountId}
+            />
           ))}
         </section>
       ) : (

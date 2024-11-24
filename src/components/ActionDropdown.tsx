@@ -33,7 +33,13 @@ import {
 } from '@/actions/file.actions';
 import { FileDetails, ShareInput } from './ActionsModalContent';
 
-const ActionDropdown = ({ file }: { file: Models.Document }) => {
+const ActionDropdown = ({
+  file,
+  currentUserAccountId,
+}: {
+  file: Models.Document;
+  currentUserAccountId: string;
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [action, setAction] = useState<ActionType | null>(null);
@@ -48,7 +54,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
     setIsDropdownOpen(false);
     setAction(null);
     setName(file.name);
-    //   setEmails([]);
+    setEmails([]);
   };
 
   const handleAction = async () => {
@@ -156,23 +162,14 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
             {file.name}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {actionsDropdownItems.map((actionItem) => (
-            <DropdownMenuItem
-              key={actionItem.value}
-              className="shad-dropdown-item"
-              onClick={() => {
-                setAction(actionItem);
+          {actionsDropdownItems.map((actionItem) => {
+            const isOwnerAction = ['rename', 'share', 'delete'].includes(
+              actionItem.value,
+            );
+            const isDownloadAction = actionItem.value === 'download';
 
-                if (
-                  ['rename', 'share', 'delete', 'details'].includes(
-                    actionItem.value,
-                  )
-                ) {
-                  setIsModalOpen(true);
-                }
-              }}
-            >
-              {actionItem.value === 'download' ? (
+            const ActionContent = () =>
+              isDownloadAction ? (
                 <Link
                   href={constructDownloadUrl(file.bucketFileId)}
                   download={file.name}
@@ -196,9 +193,36 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
                   />
                   {actionItem.label}
                 </div>
-              )}
-            </DropdownMenuItem>
-          ))}
+              );
+
+            const handleClick = () => {
+              setAction(actionItem);
+              if (
+                ['rename', 'share', 'delete', 'details'].includes(
+                  actionItem.value,
+                )
+              ) {
+                setIsModalOpen(true);
+              }
+            };
+
+            if (
+              isOwnerAction &&
+              file.owner.accountId !== currentUserAccountId
+            ) {
+              return null; // Skip rendering if the user is not the owner for these actions
+            }
+
+            return (
+              <DropdownMenuItem
+                key={actionItem.value}
+                className="shad-dropdown-item"
+                onClick={handleClick}
+              >
+                <ActionContent />
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
 
