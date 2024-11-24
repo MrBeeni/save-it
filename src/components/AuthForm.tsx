@@ -19,6 +19,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createAccount, signInUser } from '@/actions/user.actions';
 import OtpModal from './OTPModal';
+import { toast } from 'sonner';
 // import { createAccount, signInUser } from "@/lib/actions/user.actions";
 // import OtpModal from "@/components/OTPModal";
 
@@ -40,7 +41,6 @@ const authFormSchema = (formType: FormType) => {
 const AuthForm = ({ type }: { type: FormType }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const [accountId, setAccountId] = useState(null);
 
   const formSchema = authFormSchema(type);
@@ -54,7 +54,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    setErrorMessage('');
     setIsOpen(false);
     setAccountId(null);
 
@@ -66,11 +65,15 @@ const AuthForm = ({ type }: { type: FormType }) => {
               email: values.email,
             })
           : await signInUser({ email: values.email });
+      if (type === 'sign-in' && !user.accountId) {
+        toast.error('Account not found. Please sign up.');
 
+        return;
+      }
       setAccountId(user.accountId);
       setIsOpen(true);
     } catch {
-      setErrorMessage('Failed to create account. Please try again.');
+      toast.error('Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -146,8 +149,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
               />
             )}
           </Button>
-
-          {errorMessage && <p className="error-message">*{errorMessage}</p>}
 
           <div className="body-2 flex justify-center">
             <p className="text-light-100">
