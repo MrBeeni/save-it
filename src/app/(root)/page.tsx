@@ -9,6 +9,7 @@ import { Thumbnail } from '@/components/Thumbnail';
 import { Separator } from '@/components/ui/separator';
 import { getFiles, getTotalSpaceUsed } from '@/actions/file.actions';
 import { convertFileSize, getUsageSummary } from '@/lib/utils';
+import { getCurrentUser } from '@/actions/user.actions';
 
 const Dashboard = async () => {
   // Parallel requests
@@ -16,6 +17,8 @@ const Dashboard = async () => {
     getFiles({ types: [], limit: 10 }),
     getTotalSpaceUsed(),
   ]);
+
+  const currentUser = await getCurrentUser();
 
   // Get usage summary
   const usageSummary = getUsageSummary(totalSpace);
@@ -85,7 +88,10 @@ const Dashboard = async () => {
                       className="caption"
                     />
                   </div>
-                  <ActionDropdown file={file} />
+                  <ActionDropdown
+                    file={file}
+                    currentUserAccountId={currentUser.accountId}
+                  />
                 </div>
               </Link>
             ))}
